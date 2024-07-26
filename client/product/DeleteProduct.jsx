@@ -8,18 +8,21 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import auth from "../lib/auth-helper.js";
-import { remove } from "./api-shop.js";
-export default function DeleteShop(props) {
+import auth from "../lib/auth-helper";
+import { remove } from "./api-product.js";
+
+export default function DeleteProduct(props) {
   const [open, setOpen] = useState(false);
+
   const jwt = auth.isAuthenticated();
   const clickButton = () => {
     setOpen(true);
   };
-  const deleteShop = () => {
+  const deleteProduct = () => {
     remove(
       {
-        shopId: props.shop._id,
+        shopId: props.shopId,
+        productId: props.product._id,
       },
       { t: jwt.token }
     ).then((data) => {
@@ -27,7 +30,7 @@ export default function DeleteShop(props) {
         console.log(data.error);
       } else {
         setOpen(false);
-        props.onRemove(props.shop);
+        props.onRemove(props.product);
       }
     });
   };
@@ -36,39 +39,34 @@ export default function DeleteShop(props) {
   };
   return (
     <span>
-      {" "}
       <IconButton aria-label="Delete" onClick={clickButton} color="secondary">
-         <DeleteIcon />{" "}
+        <DeleteIcon />
       </IconButton>
-      {" "}
       <Dialog open={open} onClose={handleRequestClose}>
-         <DialogTitle>{"Delete " + props.shop.name}</DialogTitle>{" "}
+        <DialogTitle>{"Delete " + props.product.name}</DialogTitle>
         <DialogContent>
-          {" "}
           <DialogContentText>
-             Confirm to delete your shop {props.shop.name}. {" "}
+            Confirm to delete your product {props.product.name}.
           </DialogContentText>
-          {" "}
         </DialogContent>
-        {" "}
         <DialogActions>
-          {" "}
           <Button onClick={handleRequestClose} color="primary">
-             Cancel {" "}
+            Cancel
           </Button>
-          {" "}
-          <Button onClick={deleteShop} color="secondary" autoFocus="autoFocus">
-            Confirm {" "}
+          <Button
+            onClick={deleteProduct}
+            color="secondary"
+            autoFocus="autoFocus"
+          >
+            Confirm
           </Button>
-          {" "}
         </DialogActions>
-        {" "}
       </Dialog>
-      {" "}
     </span>
   );
 }
-DeleteShop.propTypes = {
-  shop: PropTypes.object.isRequired,
+DeleteProduct.propTypes = {
+  shopId: PropTypes.string.isRequired,
+  product: PropTypes.object.isRequired,
   onRemove: PropTypes.func.isRequired,
 };
