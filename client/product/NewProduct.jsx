@@ -3,14 +3,15 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
 import FileUpload from "@material-ui/icons/AddPhotoAlternate";
 import auth from "../lib/auth-helper";
-import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import Icon from "@material-ui/core/Icon";
 import { makeStyles } from "@material-ui/core/styles";
-import { create } from "./api-shop.js";
-import { Link, Navigate } from "react-router-dom";
+import { create } from "./api-product.js";
+import { Link, Navigate, useParams } from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
   card: {
     maxWidth: 600,
@@ -25,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   title: {
     marginTop: theme.spacing(2),
     color: theme.palette.openTitle,
-    fontSize: "1em",
+    fontSize: "1.2em",
   },
   textField: {
     marginLeft: theme.spacing(1),
@@ -43,12 +44,17 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: "10px",
   },
 }));
-export default function NewShop() {
+
+export default function NewProduct() {
+  const params = useParams();
   const classes = useStyles();
   const [values, setValues] = useState({
     name: "",
     description: "",
     image: "",
+    category: "",
+    quantity: "",
+    price: "",
     redirect: false,
     error: "",
   });
@@ -58,18 +64,22 @@ export default function NewShop() {
     setValues({ ...values, [name]: value });
   };
   const clickSubmit = () => {
-    let shopData = new FormData();
-    values.name && shopData.append("name", values.name);
-    values.description && shopData.append("description", values.description);
-    values.image && shopData.append("image", values.image);
+    let productData = new FormData();
+    values.name && productData.append("name", values.name);
+    values.description && productData.append("description", values.description);
+    values.image && productData.append("image", values.image);
+    values.category && productData.append("category", values.category);
+    values.quantity && productData.append("quantity", values.quantity);
+    values.price && productData.append("price", values.price);
+
     create(
       {
-        userId: jwt.user._id,
+        shopId: params.shopId,
       },
       {
         t: jwt.token,
       },
-      shopData
+      productData
     ).then((data) => {
       if (data.error) {
         setValues({ ...values, error: data.error });
@@ -78,20 +88,18 @@ export default function NewShop() {
       }
     });
   };
+
   if (values.redirect) {
-    return <Navigate to={"/seller/shops"} />;
+    return <Navigate to={"/seller/shop/edit/" + params.shopId} />;
   }
   return (
     <div>
-      {" "}
       <Card className={classes.card}>
-        {" "}
         <CardContent>
-          {" "}
           <Typography type="headline" component="h2" className={classes.title}>
-            New Shop{" "}
+            New Product
           </Typography>
-          <br />{" "}
+          <br />
           <input
             accept="image/*"
             onChange={handleChange("image")}
@@ -99,18 +107,16 @@ export default function NewShop() {
             id="icon-button-file"
             type="file"
           />
-          {" "}
           <label htmlFor="icon-button-file">
-            {" "}
             <Button variant="contained" color="secondary" component="span">
-               Upload Logo  <FileUpload />{" "}
+              Upload Photo
+              <FileUpload />
             </Button>
-            {" "}
           </label>{" "}
           <span className={classes.filename}>
             {values.image ? values.image.name : ""}
           </span>
-          <br />{" "}
+          <br />
           <TextField
             id="name"
             label="Name"
@@ -119,7 +125,7 @@ export default function NewShop() {
             onChange={handleChange("name")}
             margin="normal"
           />
-          <br />{" "}
+          <br />
           <TextField
             id="multiline-flexible"
             label="Description"
@@ -130,21 +136,46 @@ export default function NewShop() {
             className={classes.textField}
             margin="normal"
           />
-          <br />{" "}
+          <br />
+          <TextField
+            id="category"
+            label="Category"
+            className={classes.textField}
+            value={values.category}
+            onChange={handleChange("category")}
+            margin="normal"
+          />
+          <br />
+          <TextField
+            id="quantity"
+            label="Quantity"
+            className={classes.textField}
+            value={values.quantity}
+            onChange={handleChange("quantity")}
+            type="number"
+            margin="normal"
+          />
+          <br />
+          <TextField
+            id="price"
+            label="Price"
+            className={classes.textField}
+            value={values.price}
+            onChange={handleChange("price")}
+            type="number"
+            margin="normal"
+          />
+          <br />
           {values.error && (
             <Typography component="p" color="error">
-              {" "}
               <Icon color="error" className={classes.error}>
                 error
               </Icon>
-               {values.error}
+              {values.error}
             </Typography>
           )}
-          {" "}
         </CardContent>
-        {" "}
         <CardActions>
-          {" "}
           <Button
             color="primary"
             variant="contained"
@@ -153,15 +184,14 @@ export default function NewShop() {
           >
             Submit
           </Button>
-          {" "}
-          <Link to="/seller/shops" className={classes.submit}>
+          <Link
+            to={"/seller/shop/edit/" + params.shopId}
+            className={classes.submit}
+          >
             <Button variant="contained">Cancel</Button>
           </Link>
-          {" "}
         </CardActions>
-        {" "}
       </Card>
-      {" "}
     </div>
   );
 }
