@@ -6,7 +6,6 @@ The repository contains:
 
 * Distributed code from **eCentennial**.
 * `/.devcontainer`: Configuration file used by **Codespaces** to determine operating system.
-* `/.vscode`: Configuration file used by **Codespaces** to configure Visual Studio Code settings.
 * `/client/.eslintrc`: Settings for [ESLint](https://eslint.org/) included for code consistency and quality.
 * `/client/.prettierrc`: Settings for [Prettier](https://prettier.io/) used to format code.
 * `package.json` and `yarn.lock`: Defines the application information for [Node.js](https://nodejs.org/), dependent packages, and the versions needed for each.
@@ -19,8 +18,8 @@ Select **Open in GitHub Codespaces** and then **Create codespace**. **GitHub** w
 
 Reference the example provided `client/.env.example` to create `client/.env`.
 
-```.env
-MONGODB_URI=mongodb+srv://your_user:your_password@your_cluster.mongodb.net/YourDatabase?retryWrites=true&w=majority&appName=YourApp/yourcollection
+```
+MONGODB_URI=mongodb+srv://your_user:your_password@your_cluster.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
 ```
 
 ### Start the Server
